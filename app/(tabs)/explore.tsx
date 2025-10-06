@@ -1,112 +1,126 @@
-import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
 
-import { Collapsible } from '@/components/ui/collapsible';
-import { ExternalLink } from '@/components/external-link';
-import ParallaxScrollView from '@/components/parallax-scroll-view';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { IconSymbol } from '@/components/ui/icon-symbol';
-import { Fonts } from '@/constants/theme';
+import React from 'react';
+import { StyleSheet, View, Text, ScrollView, ImageBackground, TouchableOpacity } from 'react-native';
+import { Link } from 'expo-router';
+import { Colors } from '@/constants/theme';
+import { products } from '../../data/products';
 
-export default function TabTwoScreen() {
+const ProductCard = ({ item }) => (
+  <View style={[styles.card, { backgroundColor: item.backgroundColor || Colors.bakery.white }]}>
+    <Link href={`/product/${item.id}`} asChild>
+      <TouchableOpacity>
+        <ImageBackground source={{ uri: item.image }} style={styles.cardImage} imageStyle={{ borderRadius: 15 }}>
+          <View style={styles.priceTag}>
+            <Text style={styles.priceText}>$ {item.price}</Text>
+          </View>
+        </ImageBackground>
+      </TouchableOpacity>
+    </Link>
+    <View style={styles.cardContent}>
+      <Link href={`/product/${item.id}`} asChild>
+        <TouchableOpacity>
+          <Text style={styles.cardTitle}>{item.title}</Text>
+        </TouchableOpacity>
+      </Link>
+      <Text style={styles.cardDescription}>{item.shortDescription}</Text>
+      <TouchableOpacity style={styles.addButton}>
+        <Text style={styles.addButtonText}>Add to Cart</Text>
+      </TouchableOpacity>
+    </View>
+  </View>
+);
+
+export default function MenuScreen() {
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#D0D0D0', dark: '#353636' }}
-      headerImage={
-        <IconSymbol
-          size={310}
-          color="#808080"
-          name="chevron.left.forwardslash.chevron.right"
-          style={styles.headerImage}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText
-          type="title"
-          style={{
-            fontFamily: Fonts.rounded,
-          }}>
-          Explore
-        </ThemedText>
-      </ThemedView>
-      <ThemedText>This app includes example code to help you get started.</ThemedText>
-      <Collapsible title="File-based routing">
-        <ThemedText>
-          This app has two screens:{' '}
-          <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> and{' '}
-          <ThemedText type="defaultSemiBold">app/(tabs)/explore.tsx</ThemedText>
-        </ThemedText>
-        <ThemedText>
-          The layout file in <ThemedText type="defaultSemiBold">app/(tabs)/_layout.tsx</ThemedText>{' '}
-          sets up the tab navigator.
-        </ThemedText>
-        <ExternalLink href="https://docs.expo.dev/router/introduction">
-          <ThemedText type="link">Learn more</ThemedText>
-        </ExternalLink>
-      </Collapsible>
-      <Collapsible title="Android, iOS, and web support">
-        <ThemedText>
-          You can open this project on Android, iOS, and the web. To open the web version, press{' '}
-          <ThemedText type="defaultSemiBold">w</ThemedText> in the terminal running this project.
-        </ThemedText>
-      </Collapsible>
-      <Collapsible title="Images">
-        <ThemedText>
-          For static images, you can use the <ThemedText type="defaultSemiBold">@2x</ThemedText> and{' '}
-          <ThemedText type="defaultSemiBold">@3x</ThemedText> suffixes to provide files for
-          different screen densities
-        </ThemedText>
-        <Image
-          source={require('@/assets/images/react-logo.png')}
-          style={{ width: 100, height: 100, alignSelf: 'center' }}
-        />
-        <ExternalLink href="https://reactnative.dev/docs/images">
-          <ThemedText type="link">Learn more</ThemedText>
-        </ExternalLink>
-      </Collapsible>
-      <Collapsible title="Light and dark mode components">
-        <ThemedText>
-          This template has light and dark mode support. The{' '}
-          <ThemedText type="defaultSemiBold">useColorScheme()</ThemedText> hook lets you inspect
-          what the user&apos;s current color scheme is, and so you can adjust UI colors accordingly.
-        </ThemedText>
-        <ExternalLink href="https://docs.expo.dev/develop/user-interface/color-themes/">
-          <ThemedText type="link">Learn more</ThemedText>
-        </ExternalLink>
-      </Collapsible>
-      <Collapsible title="Animations">
-        <ThemedText>
-          This template includes an example of an animated component. The{' '}
-          <ThemedText type="defaultSemiBold">components/HelloWave.tsx</ThemedText> component uses
-          the powerful{' '}
-          <ThemedText type="defaultSemiBold" style={{ fontFamily: Fonts.mono }}>
-            react-native-reanimated
-          </ThemedText>{' '}
-          library to create a waving hand animation.
-        </ThemedText>
-        {Platform.select({
-          ios: (
-            <ThemedText>
-              The <ThemedText type="defaultSemiBold">components/ParallaxScrollView.tsx</ThemedText>{' '}
-              component provides a parallax effect for the header image.
-            </ThemedText>
-          ),
-        })}
-      </Collapsible>
-    </ParallaxScrollView>
+    <ScrollView style={styles.container}>
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>Breads</Text>
+        <View style={styles.grid}>
+          {products.breads.map(item => <ProductCard key={item.id} item={item} />)}
+        </View>
+      </View>
+
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>Pastries</Text>
+        <View style={styles.grid}>
+          {products.pastries.map(item => <ProductCard key={item.id} item={item} />)}
+        </View>
+      </View>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  headerImage: {
-    color: '#808080',
-    bottom: -90,
-    left: -35,
-    position: 'absolute',
+  container: {
+    flex: 1,
+    backgroundColor: Colors.bakery.cream,
+    paddingHorizontal: 15,
   },
-  titleContainer: {
+  section: {
+    marginBottom: 20,
+  },
+  sectionTitle: {
+    fontSize: 28,
+    fontWeight: 'bold',
+    color: Colors.bakery.darktext,
+    marginBottom: 15,
+    marginTop: 20,
+  },
+  grid: {
     flexDirection: 'row',
-    gap: 8,
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+  },
+  card: {
+    width: '48%',
+    borderRadius: 20,
+    marginBottom: 20,
+    padding: 10,
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+  },
+  cardImage: {
+    height: 150,
+    justifyContent: 'flex-end',
+    alignItems: 'flex-end',
+  },
+  priceTag: {
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 15,
+    margin: 8,
+  },
+  priceText: {
+    color: Colors.bakery.white,
+    fontWeight: 'bold',
+  },
+  cardContent: {
+    paddingTop: 10,
+  },
+  cardTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: Colors.bakery.darktext,
+  },
+  cardDescription: {
+    fontSize: 14,
+    color: Colors.bakery.gray,
+    marginVertical: 5,
+  },
+  addButton: {
+    backgroundColor: Colors.bakery.orange,
+    borderRadius: 50,
+    paddingVertical: 12,
+    alignItems: 'center',
+    marginTop: 10,
+  },
+  addButtonText: {
+    color: Colors.bakery.white,
+    fontWeight: 'bold',
+    fontSize: 14,
   },
 });

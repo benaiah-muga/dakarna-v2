@@ -25,6 +25,15 @@ export const Colors = {
     tabIconDefault: '#9BA1A6',
     tabIconSelected: tintColorDark,
   },
+  bakery: {
+    orange: '#F28F3B',
+    lightPeach: '#FDE7D1',
+    cream: '#F7E9DE',
+    white: '#FFFFFF',
+    darktext: '#1C1C1C',
+    greenOverlay: 'rgba(76, 175, 80, 0.6)',
+    gray: '#808080'
+  }
 };
 
 export const Fonts = Platform.select({
