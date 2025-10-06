@@ -1,37 +1,25 @@
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, View, Text, ScrollView, Image, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
 import { Colors } from '@/constants/theme';
-import { allProducts } from '../../data/products';
-
-// Mock Cart Data
-const initialCartItems = [
-  { ...allProducts.find(p => p.id === '1'), quantity: 2 }, // Sourdough
-  { ...allProducts.find(p => p.id === '3'), quantity: 1 }, // Croissant
-];
+import { useCart } from '../../context/CartContext';
 
 const PAYMENT_METHODS = ['Credit Card', 'Mobile Pay', 'Cash on Delivery'];
 const DELIVERY_FEE = 2.50;
 
 export default function CartScreen() {
-  const [cartItems, setCartItems] = useState(initialCartItems);
+  const { cart, increaseQuantity, decreaseQuantity } = useCart();
   const [selectedPayment, setSelectedPayment] = useState(PAYMENT_METHODS[0]);
   const [subtotal, setSubtotal] = useState(0);
   const [total, setTotal] = useState(0);
+  const router = useRouter();
 
   useEffect(() => {
-    const newSubtotal = cartItems.reduce((sum, item) => sum + (parseFloat(item.price) * item.quantity), 0);
+    const newSubtotal = cart.reduce((sum, item) => sum + (parseFloat(item.price) * item.quantity), 0);
     setSubtotal(newSubtotal);
     setTotal(newSubtotal + DELIVERY_FEE);
-  }, [cartItems]);
-
-  const handleQuantityChange = (id, amount) => {
-    setCartItems(currentItems =>
-      currentItems.map(item =>
-        item.id === id ? { ...item, quantity: Math.max(1, item.quantity + amount) } : item
-      ).filter(item => item.quantity > 0) // Optional: remove if quantity is 0
-    );
-  };
+  }, [cart]);
 
   const CartItem = ({ item }) => (
     <View style={styles.itemContainer}>
@@ -41,11 +29,11 @@ export default function CartScreen() {
         <Text style={styles.itemPrice}>$ {item.price}</Text>
       </View>
       <View style={styles.quantitySelector}>
-        <TouchableOpacity onPress={() => handleQuantityChange(item.id, -1)} style={styles.quantityButton}>
+        <TouchableOpacity onPress={() => decreaseQuantity(item.id)} style={styles.quantityButton}>
           <Ionicons name="remove" size={18} color={Colors.bakery.darktext} />
         </TouchableOpacity>
         <Text style={styles.quantityText}>{item.quantity}</Text>
-        <TouchableOpacity onPress={() => handleQuantityChange(item.id, 1)} style={styles.quantityButton}>
+        <TouchableOpacity onPress={() => increaseQuantity(item.id)} style={styles.quantityButton}>
           <Ionicons name="add" size={18} color={Colors.bakery.darktext} />
         </TouchableOpacity>
       </View>
@@ -55,7 +43,7 @@ export default function CartScreen() {
   return (
     <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContainer}>
-        {cartItems.map(item => <CartItem key={item.id} item={item} />)}
+        {cart.map(item => <CartItem key={item.id} item={item} />)}
 
         <Text style={styles.sectionTitle}>Payment Method</Text>
         {PAYMENT_METHODS.map(method => (
@@ -88,7 +76,7 @@ export default function CartScreen() {
         <TouchableOpacity style={[styles.actionButton, styles.primaryButton]}>
           <Text style={styles.primaryButtonText}>Place Order</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={[styles.actionButton, styles.secondaryButton]}>
+        <TouchableOpacity style={[styles.actionButton, styles.secondaryButton]} onPress={() => router.push('/explore')}>
           <Text style={styles.secondaryButtonText}>Continue Shopping</Text>
         </TouchableOpacity>
       </View>

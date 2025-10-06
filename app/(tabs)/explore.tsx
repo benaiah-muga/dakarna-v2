@@ -4,31 +4,46 @@ import { StyleSheet, View, Text, ScrollView, ImageBackground, TouchableOpacity }
 import { Link } from 'expo-router';
 import { Colors } from '@/constants/theme';
 import { products } from '../../data/products';
+import { useCart } from '../../context/CartContext';
+import Toast from 'react-native-toast-message';
 
-const ProductCard = ({ item }) => (
-  <View style={[styles.card, { backgroundColor: item.backgroundColor || Colors.bakery.white }]}>
-    <Link href={`/product/${item.id}`} asChild>
-      <TouchableOpacity>
-        <ImageBackground source={{ uri: item.image }} style={styles.cardImage} imageStyle={{ borderRadius: 15 }}>
-          <View style={styles.priceTag}>
-            <Text style={styles.priceText}>$ {item.price}</Text>
-          </View>
-        </ImageBackground>
-      </TouchableOpacity>
-    </Link>
-    <View style={styles.cardContent}>
+const ProductCard = ({ item }) => {
+  const { addToCart } = useCart();
+
+  const handleAddToCart = () => {
+    addToCart(item);
+    Toast.show({
+      type: 'success',
+      text1: 'Added to Cart',
+      text2: `${item.title} has been added to your cart.`,
+    });
+  };
+
+  return (
+    <View style={[styles.card, { backgroundColor: item.backgroundColor || Colors.bakery.white }]}>
       <Link href={`/product/${item.id}`} asChild>
         <TouchableOpacity>
-          <Text style={styles.cardTitle}>{item.title}</Text>
+          <ImageBackground source={{ uri: item.image }} style={styles.cardImage} imageStyle={{ borderRadius: 15 }}>
+            <View style={styles.priceTag}>
+              <Text style={styles.priceText}>$ {item.price}</Text>
+            </View>
+          </ImageBackground>
         </TouchableOpacity>
       </Link>
-      <Text style={styles.cardDescription}>{item.shortDescription}</Text>
-      <TouchableOpacity style={styles.addButton}>
-        <Text style={styles.addButtonText}>Add to Cart</Text>
-      </TouchableOpacity>
+      <View style={styles.cardContent}>
+        <Link href={`/product/${item.id}`} asChild>
+          <TouchableOpacity>
+            <Text style={styles.cardTitle}>{item.title}</Text>
+          </TouchableOpacity>
+        </Link>
+        <Text style={styles.cardDescription}>{item.shortDescription}</Text>
+        <TouchableOpacity style={styles.addButton} onPress={handleAddToCart}>
+          <Text style={styles.addButtonText}>Add to Cart</Text>
+        </TouchableOpacity>
+      </View>
     </View>
-  </View>
-);
+  );
+};
 
 export default function MenuScreen() {
   return (

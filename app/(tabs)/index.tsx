@@ -1,10 +1,12 @@
-
 import { StyleSheet, View, Text, TouchableOpacity, ImageBackground, StatusBar } from 'react-native';
+import { useRouter } from 'expo-router';
 import { Colors } from '@/constants/theme';
 
 const heroImage = { uri: "https://images.unsplash.com/photo-1563729784474-d77dbb933a9e" };
 
 export default function HomeScreen() {
+  const router = useRouter();
+
   return (
     <View style={styles.container}>
       <StatusBar barStyle="light-content" />
@@ -17,10 +19,16 @@ export default function HomeScreen() {
       </ImageBackground>
 
       <View style={styles.ctaContainer}>
-        <TouchableOpacity style={[styles.button, styles.primaryButton]}>
+        <TouchableOpacity 
+          style={[styles.button, styles.primaryButton]}
+          onPress={() => router.push('/explore')}
+        >
           <Text style={[styles.buttonText, styles.primaryButtonText]}>Order Now</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={[styles.button, styles.secondaryButton]}>
+        <TouchableOpacity 
+          style={[styles.button, styles.secondaryButton]}
+          onPress={() => router.push('/explore')}
+        >
           <Text style={[styles.buttonText, styles.secondaryButtonText]}>See Menu</Text>
         </TouchableOpacity>
       </View>

@@ -2,9 +2,11 @@ import React, { useState } from 'react';
 import { StyleSheet, View, Text, ScrollView, Image, TouchableOpacity, TextInput } from 'react-native';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import Toast from 'react-native-toast-message';
 
 import { allProducts } from '../../data/products';
 import { Colors } from '@/constants/theme';
+import { useCart } from '../../context/CartContext';
 
 // Using new images from a different provider (Pexels)
 const PAIR_IMAGES = {
@@ -17,6 +19,7 @@ export default function ProductDetailScreen() {
   const router = useRouter();
   const product = allProducts.find(p => p.id === id);
   const [quantity, setQuantity] = useState(1);
+  const { addToCartWithQuantity } = useCart();
 
   if (!product) {
     return <Text>Product not found.</Text>;
@@ -29,9 +32,19 @@ export default function ProductDetailScreen() {
     }
   };
 
+  const handleAddToCart = () => {
+    console.log('Adding to cart');
+    addToCartWithQuantity(product, quantity);
+    Toast.show({
+      type: 'success',
+      text1: 'Added to Cart',
+      text2: `${quantity} x ${product.title} has been added to your cart.`,
+    });
+  };
+
   return (
     <View style={styles.container}>
-      <Stack.Screen 
+      <Stack.Screen
         options={{
           headerShown: true,
           title: product.title,
@@ -47,7 +60,7 @@ export default function ProductDetailScreen() {
       />
       <ScrollView contentContainerStyle={styles.scrollContainer}>
         <Image source={{ uri: product.image }} style={styles.heroImage} />
-        
+
         <View style={styles.infoContainer}>
           <Text style={styles.title}>{product.title}</Text>
           <Text style={styles.description}>{product.description}</Text>
@@ -79,9 +92,9 @@ export default function ProductDetailScreen() {
           <TouchableOpacity onPress={() => handleQuantityChange(-1)} style={styles.quantityButton}>
             <Text style={styles.quantityButtonText}>-</Text>
           </TouchableOpacity>
-          <TextInput 
-            style={styles.quantityInput} 
-            value={String(quantity)} 
+          <TextInput
+            style={styles.quantityInput}
+            value={String(quantity)}
             keyboardType="numeric"
             editable={false}
           />
@@ -89,7 +102,7 @@ export default function ProductDetailScreen() {
             <Text style={styles.quantityButtonText}>+</Text>
           </TouchableOpacity>
         </View>
-        <TouchableOpacity style={styles.addToCartButton}>
+        <TouchableOpacity style={styles.addToCartButton} onPress={handleAddToCart}>
           <Text style={styles.addToCartButtonText}>Add to Cart</Text>
         </TouchableOpacity>
       </View>
@@ -134,12 +147,12 @@ const styles = StyleSheet.create({
   },
   quantityButton: { paddingHorizontal: 15 },
   quantityButtonText: { fontSize: 22, fontWeight: 'bold', color: Colors.bakery.orange },
-  quantityInput: { 
-    width: 40, 
-    textAlign: 'center', 
-    fontSize: 18, 
-    fontWeight: 'bold', 
-    color: Colors.bakery.darktext 
+  quantityInput: {
+    width: 40,
+    textAlign: 'center',
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: Colors.bakery.darktext
   },
   addToCartButton: {
     backgroundColor: Colors.bakery.orange,

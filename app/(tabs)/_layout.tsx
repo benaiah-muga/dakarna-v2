@@ -2,14 +2,17 @@
 import { Tabs } from 'expo-router';
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import { Ionicons } from '@expo/vector-icons'; // Keep for header icons
+import { Ionicons } from '@expo/vector-icons';
 
 import { Colors } from '@/constants/theme';
 
-const CustomTabItem = ({ color, focused, label }: { color: string, focused: boolean, label: string }) => {
+const CustomTabItem = ({ focused, label, iconName }: { focused: boolean, label: string, iconName: string }) => {
+  const color = focused ? Colors.bakery.orange : Colors.bakery.gray;
+  const icon = focused ? iconName : `${iconName}-outline`;
+
   return (
     <View style={styles.tabItemContainer}>
-      {focused && <View style={styles.activeIndicator} />}
+      <Ionicons name={icon as any} size={24} color={color} />
       <Text style={[styles.tabLabel, { color: color }]}>{label}</Text>
     </View>
   );
@@ -18,9 +21,7 @@ const CustomTabItem = ({ color, focused, label }: { color: string, focused: bool
 export default function TabLayout() {
   return (
     <Tabs
-      screenOptions={{ 
-        tabBarActiveTintColor: Colors.bakery.orange,
-        tabBarInactiveTintColor: Colors.bakery.gray,
+      screenOptions={{
         tabBarStyle: styles.tabBar,
         headerShown: false,
         tabBarShowLabel: false, // Disable default label
@@ -28,7 +29,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          tabBarIcon: ({ color, focused }) => <CustomTabItem color={color} focused={focused} label="Home" />,
+          tabBarIcon: ({ focused }) => <CustomTabItem focused={focused} label="Home" iconName="home" />,
           headerShown: true,
           headerTransparent: true,
           headerTitle: '',
@@ -38,8 +39,8 @@ export default function TabLayout() {
       />
       <Tabs.Screen
         name="explore"
-        options={{
-          tabBarIcon: ({ color, focused }) => <CustomTabItem color={color} focused={focused} label="Menu" />,
+        options={({ navigation }) => ({
+          tabBarIcon: ({ focused }) => <CustomTabItem focused={focused} label="Menu" iconName="grid" />,
           headerShown: true,
           headerTitle: 'Menu',
           headerTitleAlign: 'center',
@@ -47,19 +48,19 @@ export default function TabLayout() {
             fontWeight: 'bold',
             color: Colors.bakery.darktext,
           },
-          headerLeft: () => <Ionicons name="menu" size={30} color={Colors.bakery.darktext} style={{ marginLeft: 20 }} />,
+          headerLeft: () => <Ionicons name="arrow-back" size={24} color={Colors.bakery.darktext} style={{ marginLeft: 20 }} onPress={() => navigation.goBack()} />,
           headerRight: () => null,
           headerStyle: {
             backgroundColor: Colors.bakery.cream,
             shadowOpacity: 0,
             elevation: 0,
           },
-        }}
+        })}
       />
       <Tabs.Screen
         name="cart"
         options={{
-          tabBarIcon: ({ color, focused }) => <CustomTabItem color={color} focused={focused} label="Cart" />,
+          tabBarIcon: ({ focused }) => <CustomTabItem focused={focused} label="Cart" iconName="cart" />,
           headerShown: true,
           headerTitle: 'My Cart',
           headerTitleAlign: 'center',
@@ -79,7 +80,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="about"
         options={({ navigation }) => ({
-          tabBarIcon: ({ color, focused }) => <CustomTabItem color={color} focused={focused} label="About" />,
+          tabBarIcon: ({ focused }) => <CustomTabItem focused={focused} label="About" iconName="information-circle" />,
           headerShown: true,
           headerTitle: 'About Us',
           headerTitleAlign: 'center',
@@ -98,7 +99,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="profile"
         options={({ navigation }) => ({
-          tabBarIcon: ({ color, focused }) => <CustomTabItem color={color} focused={focused} label="Profile" />,
+          tabBarIcon: ({ focused }) => <CustomTabItem focused={focused} label="Profile" iconName="person" />,
           headerShown: true,
           headerTitle: 'Settings',
           headerTitleAlign: 'center',
@@ -127,7 +128,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: -3 },
     shadowOpacity: 0.1,
     shadowRadius: 3,
-    height: 65, // Adjusted height for text-only
+    height: 85, // Adjusted height for icon and text
   },
   tabItemContainer: {
     flex: 1,
@@ -135,14 +136,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   tabLabel: {
-    fontSize: 14,
-    fontWeight: 'bold',
-  },
-  activeIndicator: {
-    position: 'absolute',
-    width: 70,
-    height: 30,
-    borderRadius: 15,
-    backgroundColor: Colors.bakery.lightPeach,
+    fontSize: 12,
   },
 });
